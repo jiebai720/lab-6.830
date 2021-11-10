@@ -53,11 +53,11 @@ public class HeapFileEncoder {
 
       public static void convert(File inFile, File outFile, int npagebytes,
                  int numFields) throws IOException {
-          Type[] ts = new Type[numFields];
-          for (int i = 0; i < ts.length; i++) {
-              ts[i] = Type.INT_TYPE;
-          }
-          convert(inFile,outFile,npagebytes,numFields,ts);
+      Type[] ts = new Type[numFields];
+      for (int i = 0; i < ts.length; i++) {
+          ts[i] = Type.INT_TYPE;
+      }
+      convert(inFile,outFile,npagebytes,numFields,ts);
       }
 
    /** Convert the specified input text file into a binary
@@ -98,9 +98,6 @@ public class HeapFileEncoder {
         nheaderbytes++;  //ceiling
     int nheaderbits = nheaderbytes * 8;
 
-    System.out.println( ":: nrecords::" + nrecords + "::: nheaderbytes ::::" + nheaderbytes + "::: nheaderbits :::" + nheaderbits );
-
-
     BufferedReader br = new BufferedReader(new FileReader(inFile));
     FileOutputStream os = new FileOutputStream(outFile);
 
@@ -119,18 +116,12 @@ public class HeapFileEncoder {
 
     boolean done = false;
     boolean first = true;
-
     while (!done) {
         int c = br.read();
-
-//        System.out.println( c );
-        // Ignore Windows/Notepad special line endings
-
-//        0d------回车符号－－－－－－"/r"
-//        0a------换行符号－－－－－－"/n"
-//        一般在windows系统中两个连用，"/r/n"------0d0a
-        if (c == '\r')
-            continue;
+        
+	// Ignore Windows/Notepad special line endings
+	if (c == '\r')
+	    continue;
 
         if (c == '\n') {
             if (first)
@@ -139,7 +130,6 @@ public class HeapFileEncoder {
             first = true;
         } else
             first = false;
-
         if (c == ',' || c == '\n' || c == '\r') {
             String s = new String(buf, 0, curpos);
             if (typeAr[fieldNo] == Type.INT_TYPE) {
@@ -166,14 +156,15 @@ public class HeapFileEncoder {
                 fieldNo = 0;
             else
                 fieldNo++;
-
+            
         } else if (c == -1) {
             done = true;
+            
         } else {
             buf[curpos++] = (char)c;
             continue;
         }
-
+        
         // if we wrote a full page of records, or if we're done altogether,
         // write out the header of the page.
         //
@@ -186,48 +177,44 @@ public class HeapFileEncoder {
         if (recordcount >= nrecords
             || done && recordcount > 0
             || done && npages == 0) {
-
             int i = 0;
             byte headerbyte = 0;
-
+            
             for (i=0; i<nheaderbits; i++) {
                 if (i < recordcount)
                     headerbyte |= (1 << (i % 8));
-
+                
                 if (((i+1) % 8) == 0) {
-                    System.out.println(  headerbyte   );
                     headerStream.writeByte(headerbyte);
                     headerbyte = 0;
                 }
             }
-
+            
             if (i % 8 > 0)
                 headerStream.writeByte(headerbyte);
-
+            
             // pad the rest of the page with zeroes
-
+            
             for (i=0; i<(npagebytes - (recordcount * nrecbytes + nheaderbytes)); i++)
                 pageStream.writeByte(0);
-
+            
             // write header and body to file
             headerStream.flush();
             headerBAOS.writeTo(os);
             pageStream.flush();
             pageBAOS.writeTo(os);
-
+            
             // reset header and body for next page
             headerBAOS = new ByteArrayOutputStream(nheaderbytes);
             headerStream = new DataOutputStream(headerBAOS);
             pageBAOS = new ByteArrayOutputStream(npagebytes);
             pageStream = new DataOutputStream(pageBAOS);
-
+            
             recordcount = 0;
             npages++;
         }
-
     }
     br.close();
     os.close();
   }
-
 }

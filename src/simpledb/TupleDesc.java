@@ -6,6 +6,9 @@ import java.util.*;
  */
 public class TupleDesc {
 
+    private  Type[] types ;
+    private  String[] fieldStrings ;
+
     /**
      * Merge two TupleDescs into one, with td1.numFields + td2.numFields
      * fields, with the first td1.numFields coming from td1 and the remaining
@@ -15,8 +18,22 @@ public class TupleDesc {
      * @return the new TupleDesc
      */
     public static TupleDesc combine(TupleDesc td1, TupleDesc td2) {
-        // some code goes here
-        return null;
+
+        int length  = td1.numFields() + td2.numFields() ;
+        Type[] td3 =  new Type[length] ;
+        String[] fieldStrings = new String[length] ;
+
+        for (int i=0 ; i< length; i++){
+            if( i <= td1.numFields()-1 ){
+                td3[i] = td1.getType(i) ;
+                fieldStrings[i] = td1.fieldStrings[i] ;
+            }else{
+                td3[i] = td2.getType(i-td1.numFields() ) ;
+                fieldStrings[i] = td2.fieldStrings[ i-td1.numFields()] ;
+            }
+        }
+
+        return new TupleDesc( td3 ,  fieldStrings ) ;
     }
 
     /**
@@ -29,6 +46,8 @@ public class TupleDesc {
      */
     public TupleDesc(Type[] typeAr, String[] fieldAr) {
         // some code goes here
+        this.types = typeAr ;
+        this.fieldStrings = fieldAr ;
     }
 
     /**
@@ -41,6 +60,7 @@ public class TupleDesc {
      */
     public TupleDesc(Type[] typeAr) {
         // some code goes here
+        types = typeAr ;
     }
 
     /**
@@ -48,7 +68,7 @@ public class TupleDesc {
      */
     public int numFields() {
         // some code goes here
-        return 0;
+        return types.length ;
     }
 
     /**
@@ -60,6 +80,10 @@ public class TupleDesc {
      */
     public String getFieldName(int i) throws NoSuchElementException {
         // some code goes here
+
+        if( fieldStrings != null && fieldStrings.length > 0)
+            return fieldStrings[i] ;
+
         return null;
     }
 
@@ -72,7 +96,18 @@ public class TupleDesc {
      */
     public int nameToId(String name) throws NoSuchElementException {
         // some code goes here
-        return 0;
+        if( name == null || name.equals("") ){
+            throw new  NoSuchElementException("No Such Element Exception");
+        }
+
+        if( fieldStrings != null && fieldStrings.length >0){
+            for (int i = 0; i < fieldStrings.length ; i++) {
+                if(fieldStrings[i].equals(name )){
+                    return  i ;
+                }
+            }
+        }
+        throw new  NoSuchElementException("No Such Element Exception");
     }
 
     /**
@@ -84,7 +119,7 @@ public class TupleDesc {
      */
     public Type getType(int i) throws NoSuchElementException {
         // some code goes here
-        return null;
+        return types[i] ;
     }
 
     /**
@@ -93,7 +128,11 @@ public class TupleDesc {
      */
     public int getSize() {
         // some code goes here
-        return 0;
+
+        if( types.length > 0 ){
+            return  types.length * getType(0).getLen() ;
+        }
+        return 0 ;
     }
 
     /**
@@ -106,7 +145,26 @@ public class TupleDesc {
      */
     public boolean equals(Object o) {
         // some code goes here
-        return false;
+        if( o == null ){
+            return false;
+        }
+        if( !(o instanceof  TupleDesc ) ){
+            return false ;
+        }
+
+        TupleDesc tupleDescTemp = (TupleDesc) o ;
+
+        if( this.getSize() != tupleDescTemp.getSize() ){
+            return false ;
+        }
+
+        for (int i = 0; i < this.types.length ; i++) {
+            if( !this.getType(i).equals( tupleDescTemp.getType(i) ) ){
+                return false  ;
+            }
+        }
+
+        return true ;
     }
 
     public int hashCode() {
@@ -122,7 +180,15 @@ public class TupleDesc {
      * @return String describing this descriptor.
      */
     public String toString() {
-        // some code goes here
-        return "";
+
+        StringBuilder stringBuilder = new StringBuilder() ;
+
+        for (int i = 0; i < types.length ; i++) {
+
+            stringBuilder.append( getType(i) + "[" + getFieldName(i) +"],") ;
+        }
+
+        return stringBuilder.toString() ;
     }
+
 }

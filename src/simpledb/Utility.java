@@ -39,7 +39,8 @@ public class Utility {
      * @return a TupleDesc with n fields of type Type.INT_TYPE
      */
     public static TupleDesc getTupleDesc(int n) {
-        return new TupleDesc(getTypes(n));
+
+        return new TupleDesc( getTypes(n) );
     }
 
     /**

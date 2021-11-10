@@ -21,6 +21,7 @@ import simpledb.*;
  * up dumping the contents of f4.0.txt.
  */
 public class ScanTest extends SimpleDbTestBase {
+
     private final static Random r = new Random();
 
     /** Tests the scan operator for a table with the specified dimensions. */

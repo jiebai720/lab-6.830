@@ -21,13 +21,15 @@ public class TupleDescTest extends SimpleDbTestBase {
         td1 = Utility.getTupleDesc(1, "td1");
         td2 = Utility.getTupleDesc(2, "td2");
 
+
         // test td1.combine(td2)
         td3 = TupleDesc.combine(td1, td2);
         assertEquals(3 , td3.numFields());
         assertEquals(3 * Type.INT_TYPE.getLen(), td3.getSize());
         for (int i = 0; i < 3; ++i)
             assertEquals(Type.INT_TYPE, td3.getType(i));
-        assertEquals(combinedStringArrays(td1, td2, td3), true);
+
+        assertEquals( combinedStringArrays(td1, td2, td3), true );
 
         // test td2.combine(td1)
         td3 = TupleDesc.combine(td2, td1);
@@ -51,8 +53,9 @@ public class TupleDescTest extends SimpleDbTestBase {
      */
     private boolean combinedStringArrays(TupleDesc td1, TupleDesc td2, TupleDesc combined) {
         for (int i = 0; i < td1.numFields(); i++) {
-            if (!(((td1.getFieldName(i) == null) && (combined.getFieldName(i) == null)) ||
-                    td1.getFieldName(i).equals(combined.getFieldName(i)))) {
+            System.out.println( "td1.getFieldName(i) --- " + td1.getFieldName(i) );
+            if (  !(((td1.getFieldName(i) == null) && (combined.getFieldName(i) == null)) ||
+                    td1.getFieldName(i).equals(combined.getFieldName(i))) ) {
                 return false;
             }
         }
@@ -74,9 +77,11 @@ public class TupleDescTest extends SimpleDbTestBase {
         int[] lengths = new int[] { 1, 2, 1000 };
 
         for (int len: lengths) {
-            TupleDesc td = Utility.getTupleDesc(len);
-            for (int i = 0; i < len; ++i)
+            System.out.println( "len :::" + len );
+            TupleDesc td = Utility.getTupleDesc(len) ;
+            for (int i = 0; i < len; ++i){
                 assertEquals(Type.INT_TYPE, td.getType(i));
+            }
         }
     }
     
@@ -93,13 +98,17 @@ public class TupleDescTest extends SimpleDbTestBase {
             for (int i = 0; i < len; ++i) {
                 assertEquals(i, td.nameToId(prefix + i));
             }
-            
+
+
+            System.out.println( td.toString() );
+
             // Make sure you throw exception for non-existent fields
             try {
                 td.nameToId("foo");
                 Assert.fail("foo is not a valid field name");
             } catch (NoSuchElementException e) {
                 // expected to get here
+                System.out.println("成功抛出异常....");
             }
             
             // Make sure you throw exception for null searches
@@ -144,6 +153,7 @@ public class TupleDescTest extends SimpleDbTestBase {
             assertEquals(len, td.numFields());
         }
     }
+
 
     @Test public void testEquals() {
         TupleDesc singleInt = new TupleDesc(new Type[]{Type.INT_TYPE});

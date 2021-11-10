@@ -16,6 +16,9 @@ import java.util.*;
 
 public class Catalog {
 
+
+    private  Catalog catalog ;
+
     /**
      * Constructor.
      * Creates a new, empty catalog.
@@ -35,7 +38,6 @@ public class Catalog {
      */
     public void addTable(DbFile file, String name, String pkeyField) {
         // some code goes here
-
 
     }
 

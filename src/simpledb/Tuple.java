@@ -7,6 +7,8 @@ package simpledb;
  */
 public class Tuple {
 
+    private  TupleDesc tupleDesc ;
+
     /**
      * Create a new tuple with the specified schema (type).
      *
@@ -15,6 +17,7 @@ public class Tuple {
      */
     public Tuple(TupleDesc td) {
         // some code goes here
+        this.tupleDesc =  td  ;
     }
 
     /**
@@ -22,7 +25,7 @@ public class Tuple {
      */
     public TupleDesc getTupleDesc() {
         // some code goes here
-        return null;
+        return tupleDesc ;
     }
 
     /**
