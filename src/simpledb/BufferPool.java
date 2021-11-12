@@ -11,6 +11,7 @@ import java.io.*;
  * locks to read/write the page.
  */
 public class BufferPool {
+
     /** Bytes per page, including header. */
     public static final int PAGE_SIZE = 4096;
 
@@ -19,6 +20,10 @@ public class BufferPool {
     constructor instead. */
     public static final int DEFAULT_PAGES = 50;
 
+
+    int numPages = 0 ;
+    Page[] pages ;
+
     /**
      * Creates a BufferPool that caches up to numPages pages.
      *
@@ -26,6 +31,8 @@ public class BufferPool {
      */
     public BufferPool(int numPages) {
         // some code goes here
+        this.numPages = numPages ;
+        pages = new Page[numPages] ;
     }
 
     /**
@@ -43,9 +50,23 @@ public class BufferPool {
      * @param pid the ID of the requested page
      * @param perm the requested permissions on the page
      */
-    public  Page getPage(TransactionId tid, PageId pid, Permissions perm)
+    public  Page getPage( TransactionId tid , PageId pid , Permissions perm )
         throws TransactionAbortedException, DbException {
         // some code goes here
+
+        if( perm.toString() != "UNKNOWN" ) {
+
+            for (int i = 0; i < this.numPages ; i++) {
+                if( pid.equals( pages[i].getId() )){
+                    return  pages[i];
+                }
+            }
+            System.out.println("缓存中没有找到，从磁盘中读取...");
+
+//            Page newPage = DbFile.readPage(pid);
+
+        }
+
         return null;
     }
 

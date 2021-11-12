@@ -12,6 +12,7 @@ import static org.junit.Assert.*;
 import junit.framework.JUnit4TestAdapter;
 
 public class HeapFileReadTest extends SimpleDbTestBase {
+
     private HeapFile hf;
     private TransactionId tid;
     private TupleDesc td;
@@ -21,6 +22,7 @@ public class HeapFileReadTest extends SimpleDbTestBase {
      */
     @Before
     public void setUp() throws Exception {
+
         hf = SystemTestUtil.createRandomHeapFile(2, 20, null, null);
         td = Utility.getTupleDesc(2);
         tid = new TransactionId();
@@ -58,7 +60,8 @@ public class HeapFileReadTest extends SimpleDbTestBase {
      */
     @Test
     public void numPages() throws Exception {
-        assertEquals(1, hf.numPages());
+
+        assertEquals(1, hf.numPages() );
         // assertEquals(1, empty.numPages());
     }
 
@@ -67,7 +70,8 @@ public class HeapFileReadTest extends SimpleDbTestBase {
      */
     @Test
     public void readPage() throws Exception {
-        HeapPageId pid = new HeapPageId(hf.getId(), 0);
+
+        HeapPageId pid = new HeapPageId( hf.getId() , 0 );
         HeapPage page = (HeapPage) hf.readPage(pid);
 
         // NOTE(ghuo): we try not to dig too deeply into the Page API here; we

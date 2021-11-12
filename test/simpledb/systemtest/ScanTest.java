@@ -27,6 +27,7 @@ public class ScanTest extends SimpleDbTestBase {
     /** Tests the scan operator for a table with the specified dimensions. */
     private void validateScan(int[] columnSizes, int[] rowSizes)
             throws IOException, DbException, TransactionAbortedException {
+
         for (int columns : columnSizes) {
             for (int rows : rowSizes) {
                 ArrayList<ArrayList<Integer>> tuples = new ArrayList<ArrayList<Integer>>();
@@ -35,13 +36,15 @@ public class ScanTest extends SimpleDbTestBase {
                 Database.resetBufferPool(BufferPool.DEFAULT_PAGES);
             }
         }
+
     }
 
     /** Scan 1-4 columns. */
     @Test public void testSmall() throws IOException, DbException, TransactionAbortedException {
+
         int[] columnSizes = new int[]{1, 2, 3, 4};
         int[] rowSizes =
-                new int[]{0, 1, 2, 511, 512, 513, 1023, 1024, 1025, 4096 + r.nextInt(4096)};
+                new int[]{ 0, 1, 2, 511, 512, 513, 1023, 1024, 1025, 4096 + r.nextInt(4096) };
         validateScan(columnSizes, rowSizes);
     }
 

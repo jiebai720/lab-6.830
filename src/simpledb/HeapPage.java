@@ -37,8 +37,9 @@ public class HeapPage implements Page {
      * @see BufferPool#PAGE_SIZE
      */
     public HeapPage(HeapPageId id, byte[] data) throws IOException {
-        this.pid = id;
-        this.td = Database.getCatalog().getTupleDesc(id.getTableId());
+
+        this.pid = id ;
+        this.td = Database.getCatalog().getTupleDesc( id.getTableId() );
         this.numSlots = getNumTuples();
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
 
@@ -52,6 +53,7 @@ public class HeapPage implements Page {
             tuples = new Tuple[numSlots];
             for (int i=0; i<tuples.length; i++)
                 tuples[i] = readNextTuple(dis,i);
+
         }catch(NoSuchElementException e){
             e.printStackTrace();
         }
@@ -65,19 +67,29 @@ public class HeapPage implements Page {
     */
     private int getNumTuples() {        
         // some code goes here
-        return 0;
 
+        return  this.td.numFields() ;
     }
 
     /**
      * Computes the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes
      * @return the number of bytes in the header of a page in a HeapFile with each tuple occupying tupleSize bytes
      */
-    private int getHeaderSize() {        
-        
+    private int getHeaderSize() {
+
+        int tupleSize = 0 ;
+        int numTuples = getNumTuples() ;
+
+        for (int i = 0; i < numTuples ; i++) {
+            tupleSize += this.td.getType(i).getLen();
+        }
+
+        int tupsPerPage = (BufferPool.PAGE_SIZE * 8) / (tupleSize* 8 + 1) ;
+
+        double headerBytes = Math.ceil( tupsPerPage/8 );
+
         // some code goes here
-        return 0;
-                 
+        return (int) headerBytes ;
     }
     
     /** Return a view of this page before it was modified
@@ -101,8 +113,10 @@ public class HeapPage implements Page {
      * @return the PageId associated with this page.
      */
     public HeapPageId getId() {
+
+        return this.pid ;
     // some code goes here
-    throw new UnsupportedOperationException("implement this");
+//    throw new UnsupportedOperationException("implement this");
     }
 
     /**
@@ -218,7 +232,6 @@ public class HeapPage implements Page {
      * this method to the HeapPage constructor will create a HeapPage with
      * no valid tuples in it.
      *
-     * @param tableid The id of the table that this empty page will belong to.
      * @return The returned ByteArray.
      */
     public static byte[] createEmptyPageData() {
@@ -273,15 +286,52 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-        return 0;
+//        oldData  header
+
+        int count = 0;
+        for (int i = 0; i < header.length ; i++) {
+            int typeLength = this.td.getType(i).getLen();
+            byte slot = header[typeLength];
+            if( slot == 0 ){
+                count++ ;
+            }
+        }
+        return count;
+//        int num = 0;
+//        for(byte b : header){
+//            while(b != 0){
+//                num++;
+//                b &= (b-1);
+//            }
+//        }
+//        return getNumTuples() - num ;
+
     }
 
     /**
      * Returns true if associated slot on this page is filled.
      */
     public boolean getSlot(int i) {
-        // some code goes here
-        return false;
+
+//        System.out.println( header.length);
+
+        //63*8=504
+        int index = i / 8;
+        byte slotByte = header[index];
+
+        int result = getByte( slotByte , i%8 ) ;
+        if( result == 1){
+            return true ;
+        }else{
+            return false ;
+        }
+    }
+
+
+    int getByte( byte b,int bit) {
+        if( bit < 0 || bit > 7)
+            return 0;
+        return ( b & (0b1 << bit)) > 0 ? 1: 0;
     }
 
     /**
@@ -298,7 +348,13 @@ public class HeapPage implements Page {
      */
     public Iterator<Tuple> iterator() {
         // some code goes here
-        return null;
+
+        List<Tuple> list = new ArrayList();
+        for (int i = 0; i < this.tuples.length ; i++) {
+            list.add( tuples[i] );
+        }
+
+        return list.iterator() ;
     }
 
 }

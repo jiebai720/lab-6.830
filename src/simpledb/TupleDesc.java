@@ -61,6 +61,7 @@ public class TupleDesc {
     public TupleDesc(Type[] typeAr) {
         // some code goes here
         types = typeAr ;
+
     }
 
     /**
@@ -182,12 +183,9 @@ public class TupleDesc {
     public String toString() {
 
         StringBuilder stringBuilder = new StringBuilder() ;
-
         for (int i = 0; i < types.length ; i++) {
-
             stringBuilder.append( getType(i) + "[" + getFieldName(i) +"],") ;
         }
-
         return stringBuilder.toString() ;
     }
 

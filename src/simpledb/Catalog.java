@@ -12,12 +12,17 @@ import java.util.*;
  * For now, this is a stub catalog that must be populated with tables by a
  * user program before it can be used -- eventually, this should be converted
  * to a catalog that reads a catalog table from disk.
+ *
+ *
+ Catalog 包含多个table，一个table一个DbFile
+
  */
 
 public class Catalog {
 
 
-    private  Catalog catalog ;
+    private  Map< String , DbFile > file  ;
+
 
     /**
      * Constructor.
@@ -25,6 +30,7 @@ public class Catalog {
      */
     public Catalog() {
         // some code goes here
+        file = new HashMap<>();
     }
 
     /**
@@ -36,9 +42,10 @@ public class Catalog {
      * @param pkeyField the name of the primary key field
      * conflict exists, use the last table to be added as the table for a given name.
      */
-    public void addTable(DbFile file, String name, String pkeyField) {
+    public void addTable( DbFile file, String name, String pkeyField) {
         // some code goes here
 
+        this.file.put( name , file) ;
     }
 
     public void addTable(DbFile file, String name) {
@@ -63,7 +70,10 @@ public class Catalog {
      */
     public int getTableId(String name) {
         // some code goes here
-        return 0;
+        if( this.file.get(name) == null ){
+            throw new NoSuchElementException("the table doesn't exist");
+        }
+        return this.file.get(name).getId()  ;
     }
 
     /**
@@ -71,8 +81,16 @@ public class Catalog {
      * @param tableid The id of the table, as specified by the DbFile.getId()
      *     function passed to addTable
      */
-    public TupleDesc getTupleDesc(int tableid) throws NoSuchElementException {
+    public TupleDesc getTupleDesc( int tableid ) throws NoSuchElementException {
         // some code goes here
+
+        for( Map.Entry<String , DbFile> entry : this.file.entrySet()) {
+            System.out.println("Key = " + entry.getKey() + ", Value = " + entry.getValue());
+            DbFile dbFile = entry.getValue() ;
+            if( dbFile.getId() == tableid)  {
+                return dbFile.getTupleDesc();
+            }
+        }
         return null;
     }
 
@@ -90,6 +108,7 @@ public class Catalog {
     /** Delete all tables from the catalog */
     public void clear() {
         // some code goes here
+
     }
 
     public String getPrimaryKey(int tableid) {

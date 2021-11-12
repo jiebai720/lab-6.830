@@ -48,16 +48,18 @@ public class HeapFileEncoder {
           bw.write('\n');
       }
       bw.close();
+      System.out.println( "将要转换的txt源文件 ::::::" + tempInput.getAbsolutePath() );
       convert(tempInput, outFile, npagebytes, numFields);
   }
 
       public static void convert(File inFile, File outFile, int npagebytes,
                  int numFields) throws IOException {
-      Type[] ts = new Type[numFields];
-      for (int i = 0; i < ts.length; i++) {
-          ts[i] = Type.INT_TYPE;
-      }
-      convert(inFile,outFile,npagebytes,numFields,ts);
+
+          Type[] ts = new Type[numFields];
+          for (int i = 0; i < ts.length; i++) {
+              ts[i] = Type.INT_TYPE;
+          }
+          convert(inFile,outFile,npagebytes,numFields,ts);
       }
 
    /** Convert the specified input text file into a binary
@@ -119,9 +121,9 @@ public class HeapFileEncoder {
     while (!done) {
         int c = br.read();
         
-	// Ignore Windows/Notepad special line endings
-	if (c == '\r')
-	    continue;
+        // Ignore Windows/Notepad special line endings
+        if (c == '\r')
+            continue;
 
         if (c == '\n') {
             if (first)
@@ -130,6 +132,8 @@ public class HeapFileEncoder {
             first = true;
         } else
             first = false;
+
+
         if (c == ',' || c == '\n' || c == '\r') {
             String s = new String(buf, 0, curpos);
             if (typeAr[fieldNo] == Type.INT_TYPE) {
@@ -138,8 +142,7 @@ public class HeapFileEncoder {
                 } catch (NumberFormatException e) {
                     System.out.println ("BAD LINE : " + s);
                 }
-            }
-            else   if (typeAr[fieldNo] == Type.STRING_TYPE) {
+            }else   if (typeAr[fieldNo] == Type.STRING_TYPE) {
                 s = s.trim();
                 int overflow = Type.STRING_LEN - s.length();
                 if (overflow < 0) {
@@ -181,20 +184,27 @@ public class HeapFileEncoder {
             byte headerbyte = 0;
             
             for (i=0; i<nheaderbits; i++) {
-                if (i < recordcount)
+                if (i < recordcount){
                     headerbyte |= (1 << (i % 8));
+                    System.out.println( "  recordcount :::" + recordcount + ":: i ::" + i + "::: headerbyte :::" +  headerbyte );
+                }
                 
                 if (((i+1) % 8) == 0) {
+                    System.out.println( "i===" + i  + ":::" +  headerbyte );
                     headerStream.writeByte(headerbyte);
                     headerbyte = 0;
                 }
+//                System.out.println("下一次::::");
             }
-            
+
+            System.out.println( " i  ::::" + i  );
             if (i % 8 > 0)
                 headerStream.writeByte(headerbyte);
+
+            System.out.println("header 处理完成...");
             
             // pad the rest of the page with zeroes
-            
+            System.out.println( "padding..." + (npagebytes - (recordcount * nrecbytes + nheaderbytes)) );
             for (i=0; i<(npagebytes - (recordcount * nrecbytes + nheaderbytes)); i++)
                 pageStream.writeByte(0);
             

@@ -16,6 +16,7 @@ import static org.junit.Assert.assertTrue;
 import junit.framework.JUnit4TestAdapter;
 
 public class HeapPageReadTest extends SimpleDbTestBase {
+
     private HeapPageId pid;
 
     public static final int[][] EXAMPLE_VALUES = new int[][] {
@@ -41,7 +42,7 @@ public class HeapPageReadTest extends SimpleDbTestBase {
         { 17197, 16388 }
     };
 
-    public static final byte[] EXAMPLE_DATA;
+    public static final byte[] EXAMPLE_DATA ;
     static {
         // Build the input table
         ArrayList<ArrayList<Integer>> table = new ArrayList<ArrayList<Integer>>();
@@ -59,6 +60,7 @@ public class HeapPageReadTest extends SimpleDbTestBase {
             temp.deleteOnExit();
             HeapFileEncoder.convert(table, temp, BufferPool.PAGE_SIZE, 2);
             EXAMPLE_DATA = TestUtil.readFileBytes(temp.getAbsolutePath());
+            System.out.println( "生成的dat文件：：：" + temp.getAbsolutePath() );
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
@@ -76,8 +78,8 @@ public class HeapPageReadTest extends SimpleDbTestBase {
      * Unit test for HeapPage.getId()
      */
     @Test public void getId() throws Exception {
-        HeapPage page = new HeapPage(pid, EXAMPLE_DATA);
-        assertEquals(pid, page.getId());
+        HeapPage page = new HeapPage( pid , EXAMPLE_DATA );
+        assertEquals( pid, page.getId() );
     }
 
     /**
@@ -103,7 +105,7 @@ public class HeapPageReadTest extends SimpleDbTestBase {
      * Unit test for HeapPage.getNumEmptySlots()
      */
     @Test public void getNumEmptySlots() throws Exception {
-        HeapPage page = new HeapPage(pid, EXAMPLE_DATA);
+        HeapPage page = new HeapPage( pid , EXAMPLE_DATA );
         assertEquals(484, page.getNumEmptySlots());
     }
 

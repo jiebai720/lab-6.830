@@ -8,6 +8,8 @@ package simpledb;
 public class Tuple {
 
     private  TupleDesc tupleDesc ;
+    private  Field[]  fields ;
+    private RecordId recordId ;
 
     /**
      * Create a new tuple with the specified schema (type).
@@ -18,6 +20,7 @@ public class Tuple {
     public Tuple(TupleDesc td) {
         // some code goes here
         this.tupleDesc =  td  ;
+        fields = new Field[ td.numFields() ];
     }
 
     /**
@@ -34,7 +37,7 @@ public class Tuple {
      */
     public RecordId getRecordId() {
         // some code goes here
-        return null;
+        return recordId ;
     }
 
     /**
@@ -43,6 +46,7 @@ public class Tuple {
      */
     public void setRecordId(RecordId rid) {
         // some code goes here
+        this.recordId = rid ;
     }
 
     /**
@@ -53,6 +57,8 @@ public class Tuple {
      */
     public void setField(int i, Field f) {
         // some code goes here
+
+        fields[i] = f ;
     }
 
     /**
@@ -62,7 +68,7 @@ public class Tuple {
      */
     public Field getField(int i) {
         // some code goes here
-        return null;
+        return fields[i];
     }
 
     /**
@@ -78,4 +84,5 @@ public class Tuple {
         // some code goes here
         throw new UnsupportedOperationException("Implement this");
     }
+
 }

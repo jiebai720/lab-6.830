@@ -14,15 +14,18 @@ import simpledb.TestUtil.SkeletonFile;
 import simpledb.systemtest.SimpleDbTestBase;
 import simpledb.systemtest.SystemTestUtil;
 
+
 public class CatalogTest extends SimpleDbTestBase {
+
+
     private static String name = "test";
-	private String nameThisTestRun;
+	private String nameThisTestRun ;
     
     @Before public void addTables() throws Exception {
         Database.getCatalog().clear();
 		nameThisTestRun = SystemTestUtil.getUUID();
-        Database.getCatalog().addTable(new SkeletonFile(-1, Utility.getTupleDesc(2)), nameThisTestRun);
-        Database.getCatalog().addTable(new SkeletonFile(-2, Utility.getTupleDesc(2)), name);
+        Database.getCatalog().addTable( new SkeletonFile(-1, Utility.getTupleDesc(2)) , nameThisTestRun);
+        Database.getCatalog().addTable( new SkeletonFile(-2, Utility.getTupleDesc(2)) , name );
     }
 
     /**
@@ -32,7 +35,7 @@ public class CatalogTest extends SimpleDbTestBase {
         TupleDesc expected = Utility.getTupleDesc(2);
         TupleDesc actual = Database.getCatalog().getTupleDesc(-1);
 
-        assertEquals(expected, actual);
+        assertEquals( expected , actual );
     }
 
     /**

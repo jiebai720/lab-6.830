@@ -8,6 +8,10 @@ import java.util.*;
  */
 public class SeqScan implements DbIterator {
 
+
+    TransactionId tid ;
+    int tableid ;
+    String tableAlias ;
     /**
      * Creates a sequential scan over the specified table as a part of the
      * specified transaction.
@@ -20,8 +24,12 @@ public class SeqScan implements DbIterator {
      *         or fieldName are null.  It shouldn't crash if they are, but the resulting
      *         name can be null.fieldName, tableAlias.null, or null.null).
      */
-    public SeqScan(TransactionId tid, int tableid, String tableAlias) {
+    public SeqScan( TransactionId tid, int tableid, String tableAlias) {
         // some code goes here
+        this.tid = tid ;
+        this.tableAlias = tableAlias ;
+        this.tableid = tableid ;
+
     }
 
     public void open()
