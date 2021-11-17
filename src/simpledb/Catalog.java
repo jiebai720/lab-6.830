@@ -45,7 +45,7 @@ public class Catalog {
     public void addTable( DbFile file, String name, String pkeyField) {
         // some code goes here
 
-        this.file.put( name , file) ;
+        this.file.put( name , file ) ;
     }
 
     public void addTable(DbFile file, String name) {
@@ -102,6 +102,13 @@ public class Catalog {
      */
     public DbFile getDbFile(int tableid) throws NoSuchElementException {
         // some code goes here
+
+        for( Map.Entry<String , DbFile> entry : this.file.entrySet()) {
+            DbFile dbFile = entry.getValue() ;
+            if( dbFile.getId() == tableid )  {
+                return dbFile ;
+            }
+        }
         return null;
     }
 

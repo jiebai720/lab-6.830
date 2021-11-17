@@ -14,7 +14,7 @@ public class TupleIterator implements DbIterator {
      * Constructs an iterator from the specified Iterable, and the specified descriptor.
      * @param tuples The set of tuples to iterate over
      */
-    public TupleIterator(TupleDesc td, Iterable<Tuple> tuples) {
+    public TupleIterator(TupleDesc td, Iterable<Tuple> tuples ) {
         this.td = td;
         this.tuples = tuples;
 

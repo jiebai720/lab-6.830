@@ -82,7 +82,13 @@ public class Tuple {
      */
     public String toString() {
         // some code goes here
-        throw new UnsupportedOperationException("Implement this");
+        StringBuffer stringBuffer = new StringBuffer("") ;
+        for ( Field field : fields ){
+            stringBuffer.append( field + "\t");
+        }
+
+        return  stringBuffer.toString() ;
+//        throw new UnsupportedOperationException("Implement this");
     }
 
 }

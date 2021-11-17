@@ -1,6 +1,9 @@
 package simpledb;
 
-import java.io.*;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * BufferPool manages the reading and writing of pages into memory from
  * disk. Access methods call into it to retrieve pages, and it fetches
@@ -22,7 +25,7 @@ public class BufferPool {
 
 
     int numPages = 0 ;
-    Page[] pages ;
+    public List<Page> pageList;
 
     /**
      * Creates a BufferPool that caches up to numPages pages.
@@ -32,7 +35,7 @@ public class BufferPool {
     public BufferPool(int numPages) {
         // some code goes here
         this.numPages = numPages ;
-        pages = new Page[numPages] ;
+        pageList = new ArrayList(numPages)  ;
     }
 
     /**
@@ -52,22 +55,31 @@ public class BufferPool {
      */
     public  Page getPage( TransactionId tid , PageId pid , Permissions perm )
         throws TransactionAbortedException, DbException {
-        // some code goes here
 
+        // some code goes here
+        Page page  =  null ;
         if( perm.toString() != "UNKNOWN" ) {
 
             for (int i = 0; i < this.numPages ; i++) {
-                if( pid.equals( pages[i].getId() )){
-                    return  pages[i];
+                if( pageList != null && pageList.size() >0  ){
+
+                    if( i < pageList.size() ){
+//                        System.out.print(" 缓存中找ing..." + pid.getTableId() + "===" +  pid.pageno() + " pageList ==" + pageList.get(i).getId().getTableId() + "===" + pageList.get(i).getId().pageno() );
+                        if( pid.equals( pageList.get(i).getId() )){
+                            return  pageList.get(i);
+                        }
+                    }
                 }
+//                break ;
             }
-            System.out.println("缓存中没有找到，从磁盘中读取...");
+            System.out.println("缓存中没有找到，从磁盘中读取 getTableId ..." + pid.getTableId() + "-- pageno --" + pid.pageno() );
 
-//            Page newPage = DbFile.readPage(pid);
-
+            DbFile dbFile = Database.getCatalog().getDbFile( pid.getTableId()  ) ;
+            page = dbFile.readPage(pid) ;
+            pageList.add( page );
         }
 
-        return null;
+        return page ;
     }
 
     /**
@@ -119,10 +131,10 @@ public class BufferPool {
      * acquire a write lock on the page the tuple is added to(Lock 
      * acquisition is not needed for lab2). May block if the lock cannot 
      * be acquired.
-     * 
+     *
      * Marks any pages that were dirtied by the operation as dirty by calling
-     * their markDirty bit, and updates cached versions of any pages that have 
-     * been dirtied so that future requests see up-to-date pages. 
+     * their markDirty bit, and updates cached versions of any pages that have
+     * been dirtied so that future requests see up-to-date pages.
      *
      * @param tid the transaction adding the tuple
      * @param tableId the table to add the tuple to
@@ -140,7 +152,7 @@ public class BufferPool {
      * the lock cannot be acquired.
      *
      * Marks any pages that were dirtied by the operation as dirty by calling
-     * their markDirty bit.  Does not need to update cached versions of any pages that have 
+     * their markDirty bit.  Does not need to update cached versions of any pages that have
      * been dirtied, as it is not possible that a new page was created during the deletion
      * (note difference from addTuple).
      *

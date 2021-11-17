@@ -18,7 +18,7 @@ Many of the methods here are synchronized (to prevent concurrent log
 writes from happening); many of the methods in BufferPool are also
 synchronized (for similar reasons.)  Problem is that BufferPool writes
 log records (on page flushed) and the log file flushes BufferPool
-pages (on checkpoints and recovery.)  This can lead to deadlock.  For
+pageList (on checkpoints and recovery.)  This can lead to deadlock.  For
 that reason, any LogFile operation that needs to access the BufferPool
 must not be declared synchronized and must begin with a block like:
 
@@ -454,7 +454,7 @@ public class LogFile {
     }
 
     /** Rollback the specified transaction, setting the state of any
-        of pages it updated to their pre-updated state.  To preserve
+        of pageList it updated to their pre-updated state.  To preserve
         transaction semantics, this should not be called on
         transactions that have already committed (though this may not
         be enforced by this method.)

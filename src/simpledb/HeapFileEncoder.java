@@ -186,22 +186,27 @@ public class HeapFileEncoder {
             for (i=0; i<nheaderbits; i++) {
                 if (i < recordcount){
                     headerbyte |= (1 << (i % 8));
-                    System.out.println( "  recordcount :::" + recordcount + ":: i ::" + i + "::: headerbyte :::" +  headerbyte );
+//                    System.out.println( "  recordcount :::" + recordcount + ":: i ::" + i + "::: headerbyte :::" +  headerbyte );
                 }
                 
                 if (((i+1) % 8) == 0) {
-                    System.out.println( "i===" + i  + ":::" +  headerbyte );
+//                    System.out.println( "i===" + i  + ":::" +  headerbyte );
                     headerStream.writeByte(headerbyte);
                     headerbyte = 0;
                 }
 //                System.out.println("下一次::::");
             }
 
-            System.out.println( " i  ::::" + i  );
+            if (Debug.isEnabled()) {
+                Debug.log( " i  ::::" + i  + " ::: nheaderbits :::"  + nheaderbits  );
+            }
             if (i % 8 > 0)
                 headerStream.writeByte(headerbyte);
 
-            System.out.println("header 处理完成...");
+            if (Debug.isEnabled()) {
+                System.out.println("header 处理完成...");
+//                Debug.log( " i  ::::" + i  + " ::: nheaderbits :::"  + nheaderbits  );
+            }
             
             // pad the rest of the page with zeroes
             System.out.println( "padding..." + (npagebytes - (recordcount * nrecbytes + nheaderbytes)) );

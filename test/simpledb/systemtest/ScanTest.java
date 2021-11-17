@@ -30,6 +30,7 @@ public class ScanTest extends SimpleDbTestBase {
 
         for (int columns : columnSizes) {
             for (int rows : rowSizes) {
+                System.out.println( " validateScan ::" + rows + "--" +  columns );
                 ArrayList<ArrayList<Integer>> tuples = new ArrayList<ArrayList<Integer>>();
                 HeapFile f = SystemTestUtil.createRandomHeapFile(columns, rows, null, tuples);
                 SystemTestUtil.matchTuples(f, tuples);
@@ -38,6 +39,24 @@ public class ScanTest extends SimpleDbTestBase {
         }
 
     }
+
+    /** Scan 1-4 columns. */
+    @Test public void MytestSmall() throws IOException, DbException, TransactionAbortedException {
+
+//        int[] columnSizes = new int[]{1, 2, 3, 4};
+//        int[] rowSizes =
+//                new int[]{ 0, 1, 2, 511, 512, 513, 1023, 1024, 1025, 4096 + r.nextInt(4096) };
+
+        int columns  = 1 ;
+
+        int rows = 0 ;
+        System.out.println( " MytestSmall validateScan ::" + rows + "--" +  columns );
+        ArrayList<ArrayList<Integer>> tuples = new ArrayList<ArrayList<Integer>>();
+        HeapFile f = SystemTestUtil.createRandomHeapFile(columns, rows, null, tuples);
+        SystemTestUtil.matchTuples(f, tuples);
+        Database.resetBufferPool(BufferPool.DEFAULT_PAGES);
+    }
+
 
     /** Scan 1-4 columns. */
     @Test public void testSmall() throws IOException, DbException, TransactionAbortedException {
@@ -76,6 +95,7 @@ public class ScanTest extends SimpleDbTestBase {
      * @throws TransactionAbortedException
      * @throws DbException */
     @Test public void testCache() throws IOException, DbException, TransactionAbortedException {
+
         /** Counts the number of readPage operations. */
         class InstrumentedHeapFile extends HeapFile {
             public InstrumentedHeapFile(File f, TupleDesc td) {
@@ -104,7 +124,7 @@ public class ScanTest extends SimpleDbTestBase {
         assertEquals(PAGES, table.readCount);
         table.readCount = 0;
 
-        // Scan the table again: all pages should be cached
+        // Scan the table again: all pageList should be cached
         SystemTestUtil.matchTuples(table, tuples);
         assertEquals(0, table.readCount);
     }

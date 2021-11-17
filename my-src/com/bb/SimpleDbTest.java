@@ -10,16 +10,15 @@ public class SimpleDbTest {
 
     public static void main (String args[])   throws  Exception {
 
-        Type types[] = new Type[]{ Type.INT_TYPE, Type.INT_TYPE, Type.INT_TYPE };
-        String names[] = new String[]{ "field0", "field1", "field2" };
+        Type types[] = new Type[]{ Type.INT_TYPE, Type.INT_TYPE , Type.INT_TYPE , Type.INT_TYPE  };
+        String names[] = new String[]{ "field0", "field1", "field2", "field3" };
         TupleDesc descriptor = new TupleDesc( types , names );
 
-        HeapFile table1 = new HeapFile(new File("some_data_file.dat"), descriptor);
-        Database.getCatalog().addTable(table1, "test");
-
+        HeapFile table1 = new HeapFile(new File("E:\\code_opensource\\3.h2\\mit\\6.830-lab1\\my-src\\file.dat"), descriptor);
+        Database.getCatalog().addTable(table1, "test1");
 
         TransactionId tid = new TransactionId();
-        SeqScan f = new SeqScan(tid, table1.getId(), "test");
+        SeqScan f = new SeqScan(tid, table1.getId(), "test1");
 
         try {
 // and run it

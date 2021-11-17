@@ -5,27 +5,33 @@ public class MyTest {
 
     public static void main(String args[]){
 
+        float a =  3/2 ;
+
+        System.out.println( 3/2 );
+        double b = Math.ceil( a ) ;
+
+        System.out.println( a + "=== ia ==" + b );
 
 
-        for (int i = 0; i < 18; i++) {
-            int index = i/8 ;
-            System.out.println( i+"---"+ index );
-
-            int index2=  i%8 ;
-            System.out.println( i+">>>>>>>"+ index2 );
-        }
-
-        byte b = 1 ;
-
-        for (int i = 0; i < 8; i++) {
-            System.out.println( i + "=== lll ===" + getByte( b , i ) );
-        }
-
-        int[] lengths = new int[] { 1, 2, 1000 };
-
-        for (int len: lengths) {
-//            System.out.println( "len :::" + len );
-        }
+//        for (int i = 0; i < 18; i++) {
+//            int index = i/8 ;
+//            System.out.println( i+"---"+ index );
+//
+//            int index2=  i%8 ;
+//            System.out.println( i+">>>>>>>"+ index2 );
+//        }
+//
+//        byte b = 1 ;
+//
+//        for (int i = 0; i < 8; i++) {
+//            System.out.println( i + "=== lll ===" + getByte( b , i ) );
+//        }
+//
+//        int[] lengths = new int[] { 1, 2, 1000 };
+//
+//        for (int len: lengths) {
+////            System.out.println( "len :::" + len );
+//        }
 
     }
 

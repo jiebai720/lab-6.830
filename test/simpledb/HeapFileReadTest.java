@@ -62,7 +62,7 @@ public class HeapFileReadTest extends SimpleDbTestBase {
     public void numPages() throws Exception {
 
         assertEquals(1, hf.numPages() );
-        // assertEquals(1, empty.numPages());
+//         assertEquals(1, empty.numPages());
     }
 
     /**

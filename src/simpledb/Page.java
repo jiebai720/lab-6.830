@@ -1,13 +1,13 @@
 package simpledb;
 
 /**
- * Page is the interface used to represent pages that are resident in the
- * BufferPool.  Typically, DbFiles will read and write pages from disk.
+ * Page is the interface used to represent pageList that are resident in the
+ * BufferPool.  Typically, DbFiles will read and write pageList from disk.
  * <p>
  * Pages may be "dirty", indicating that they have been modified since they
  * were last written out to disk.
  *
- * For recovery purposes, pages MUST have a single constructor of the form:
+ * For recovery purposes, pageList MUST have a single constructor of the form:
  *     Page(PageId id, byte[] data)
  */
 public interface Page {

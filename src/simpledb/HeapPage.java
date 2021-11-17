@@ -4,7 +4,7 @@ import java.util.*;
 import java.io.*;
 
 /**
- * HeapPage stores pages of HeapFiles and implements the Page interface that
+ * HeapPage stores pageList of HeapFiles and implements the Page interface that
  * is used by BufferPool.
  *
  * @see HeapFile
@@ -36,11 +36,13 @@ public class HeapPage implements Page {
      * @see Catalog#getTupleDesc
      * @see BufferPool#PAGE_SIZE
      */
-    public HeapPage(HeapPageId id, byte[] data) throws IOException {
+    public HeapPage( HeapPageId id, byte[] data) throws IOException {
 
         this.pid = id ;
         this.td = Database.getCatalog().getTupleDesc( id.getTableId() );
         this.numSlots = getNumTuples();
+
+        System.out.println( "===this.numSlots ::" + this.numSlots );
         DataInputStream dis = new DataInputStream(new ByteArrayInputStream(data));
 
         // allocate and read the header slots of this page
@@ -68,7 +70,17 @@ public class HeapPage implements Page {
     private int getNumTuples() {        
         // some code goes here
 
-        return  this.td.numFields() ;
+        int tupleSize = 0 ;
+
+        for (int i = 0; i < this.td.numFields() ; i++) {
+            tupleSize += this.td.getType(i).getLen();
+        }
+
+//        System.out.println( "padding..." + (npagebytes - (recordcount * nrecbytes + nheaderbytes)) );
+
+        int nrecords = ( BufferPool.PAGE_SIZE * 8) /  (tupleSize * 8 + 1);  //floor comes for free
+
+        return nrecords ;
     }
 
     /**
@@ -77,19 +89,24 @@ public class HeapPage implements Page {
      */
     private int getHeaderSize() {
 
-        int tupleSize = 0 ;
-        int numTuples = getNumTuples() ;
-
-        for (int i = 0; i < numTuples ; i++) {
-            tupleSize += this.td.getType(i).getLen();
+        // some code goes here
+        int nrecbytes = 0;
+        for (int i = 0; i < this.td.numFields()  ; i++) {
+            nrecbytes +=  this.td.getType(i).getLen();
         }
 
-        int tupsPerPage = (BufferPool.PAGE_SIZE * 8) / (tupleSize* 8 + 1) ;
+//        int nrecords = ( npagebytes * 8) / (tupleSize* 8 + 1) ;
+        int nrecords = ( BufferPool.PAGE_SIZE * 8) /  (nrecbytes * 8 + 1);  //floor comes for free
 
-        double headerBytes = Math.ceil( tupsPerPage/8 );
+        int nheaderbytes = (nrecords / 8);
+        if (nheaderbytes * 8 < nrecords)
+            nheaderbytes++;  //ceiling
 
-        // some code goes here
-        return (int) headerBytes ;
+//        int nheaderbits = nheaderbytes * 8;
+
+//        double headerBytes = Math.ceil( tupsPerPage/8 );
+
+        return  nheaderbytes ;
     }
     
     /** Return a view of this page before it was modified
@@ -228,7 +245,7 @@ public class HeapPage implements Page {
     /**
      * Static method to generate a byte array corresponding to an empty
      * HeapPage.
-     * Used to add new, empty pages to the file. Passing the results of
+     * Used to add new, empty pageList to the file. Passing the results of
      * this method to the HeapPage constructor will create a HeapPage with
      * no valid tuples in it.
      *
@@ -286,26 +303,15 @@ public class HeapPage implements Page {
      */
     public int getNumEmptySlots() {
         // some code goes here
-//        oldData  header
 
         int count = 0;
-        for (int i = 0; i < header.length ; i++) {
-            int typeLength = this.td.getType(i).getLen();
-            byte slot = header[typeLength];
-            if( slot == 0 ){
-                count++ ;
+        for (int i = 0; i < header.length*8 ; i++) {
+            if( !getSlot(i) ){
+//                System.out.println(" is empty slot .. i==" + i );
+                count++;
             }
         }
-        return count;
-//        int num = 0;
-//        for(byte b : header){
-//            while(b != 0){
-//                num++;
-//                b &= (b-1);
-//            }
-//        }
-//        return getNumTuples() - num ;
-
+        return count ;
     }
 
     /**
@@ -317,6 +323,9 @@ public class HeapPage implements Page {
 
         //63*8=504
         int index = i / 8;
+
+//        System.out.println( ":::: getSlot 111 index ::: " + index + " i == " + i  );
+
         byte slotByte = header[index];
 
         int result = getByte( slotByte , i%8 ) ;
@@ -328,7 +337,7 @@ public class HeapPage implements Page {
     }
 
 
-    int getByte( byte b,int bit) {
+    private int getByte( byte b,int bit) {
         if( bit < 0 || bit > 7)
             return 0;
         return ( b & (0b1 << bit)) > 0 ? 1: 0;
@@ -351,7 +360,13 @@ public class HeapPage implements Page {
 
         List<Tuple> list = new ArrayList();
         for (int i = 0; i < this.tuples.length ; i++) {
-            list.add( tuples[i] );
+//            if( i == 20 ){
+//                System.out.println( " aa= " );
+//            }
+//            System.out.println( " aa= "  + i );
+
+            if( tuples[i] != null)
+                list.add( tuples[i] );
         }
 
         return list.iterator() ;

@@ -50,6 +50,7 @@ public class HeapFile implements DbFile {
     * @return an ID uniquely identifying this HeapFile.
     */
     public int getId() {
+
         return  this.file.getAbsolutePath().hashCode() ;
         // some code goes here
 //        throw new UnsupportedOperationException("implement this");
@@ -69,8 +70,54 @@ public class HeapFile implements DbFile {
     // see DbFile.java for javadocs
     public Page readPage(PageId pid) {
         // some code goes here
-        return null;
+
+        HeapPage page = null ;
+
+        for (int i = 0; i < numPages() ; i++) {
+
+            if( i  ==  pid.pageno() ){
+                try {
+                    byte[]  data = getContent( this.file , Database.getBufferPool().PAGE_SIZE , i*Database.getBufferPool().PAGE_SIZE ) ;
+                    page = new HeapPage( (HeapPageId) pid , data ) ;
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            }
+        }
+
+        return page ;
     }
+
+    /**
+     *
+     * <p>Title: getContent</p>
+     * <p>Description:根据文件路径读取文件转出byte[] </p>
+     * @return 字节数组
+     * @throws IOException
+     */
+    public static byte[] getContent( File file , int pageSize  ,int skipPosition ) throws IOException {
+
+        FileInputStream fi = new FileInputStream(file);
+        fi.skip( skipPosition );
+
+        byte[] buffer = new byte[pageSize];
+        int numRead = 0 ;
+        int  offset = 0 ;
+        while ( offset < buffer.length
+                && (numRead = fi.read(buffer, offset , buffer.length - offset)) >= 0) {
+            offset += numRead;
+        }
+
+        // 确保所有数据均被读取
+        if (offset != buffer.length) {
+            throw new IOException("Could not completely read file "
+                    + file.getName());
+        }
+        fi.close();
+        return buffer ;
+    }
+
 
     // see DbFile.java for javadocs
     public void writePage(Page page) throws IOException {
@@ -83,7 +130,14 @@ public class HeapFile implements DbFile {
      */
     public int numPages() {
         // some code goes here
-        return 0;
+
+        long fileSizeBytes = this.file.length()  ;
+        long pageSize = Integer.valueOf(Database.getBufferPool().PAGE_SIZE).longValue();
+        long a = fileSizeBytes / pageSize ;
+        if( fileSizeBytes % pageSize >0 ) {
+            a++;
+        }
+        return   Double.valueOf(a).intValue()  ;
     }
 
     // see DbFile.java for javadocs
@@ -105,7 +159,34 @@ public class HeapFile implements DbFile {
     // see DbFile.java for javadocs
     public DbFileIterator iterator(TransactionId tid) {
         // some code goes here
-        return null;
+
+        List<Tuple> tupleList = new ArrayList() ;
+
+        for (int i = 0; i < numPages() ; i++) {
+
+            HeapPageId heapPageId = new HeapPageId( getId() , i );
+
+            try {
+                Page page = Database.getBufferPool().getPage( tid , heapPageId  , Permissions.READ_ONLY ) ;
+                HeapPage heapPage = (HeapPage) page ;
+                if( page instanceof  HeapPage) {
+
+                    Iterator<Tuple>  tupleIterator = heapPage.iterator();
+                    while ( tupleIterator.hasNext()) {
+                        Tuple tuple = (Tuple) tupleIterator.next();
+                        tupleList.add( tuple ) ;
+                    }
+                }
+            } catch (TransactionAbortedException e) {
+                e.printStackTrace();
+            } catch (DbException e) {
+                e.printStackTrace();
+            }
+        }
+
+        DbFileIterator tupleIterator = new HeapFileIterator( tupleList ) ;
+
+        return tupleIterator  ;
     }
     
 }

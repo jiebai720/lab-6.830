@@ -3,7 +3,7 @@ package simpledb;
 /** Unique identifier for HeapPage objects. */
 public class HeapPageId implements PageId {
 
-    private  int tableId;
+    private  int tableId ;
     private  int pgNo ;
 
     /**
